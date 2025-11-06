@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Marketplace - Продажа и покупка NFT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1 onclick="refreshPage()">🖼️ NFT Market</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#featured">Главная</a>
+                <a href="#collections">Коллекции</a>
+                <a href="#creators">Создатели</a>
+                <a href="#stats">Статистика</a>
+            </div>
+            <div class="nav-actions" id="navActions">
+                <button class="btn-wallet" onclick="connectWallet()">🔗 Подключить кошелек</button>
+                <button class="btn-create" onclick="openCreateModal()">✨ Создать NFT</button>
+                <button class="btn-login" onclick="openAuthModal()">Войти</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Модальное окно авторизации -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-content">
+            <span class="close-auth" onclick="closeAuthModal()">&times;</span>
+            <h3>Вход в NFT Market</h3>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Вход</button>
+                <button class="tab-btn" data-tab="register">Регистрация</button>
+            </div>
+            
+            <div class="tab-content active" id="login">
+                <input type="email" id="loginEmail" placeholder="Email">
+                <input type="password" id="loginPassword" placeholder="Пароль">
+                <button class="btn-primary" onclick="login()">Войти</button>
+            </div>
+            
+            <div class="tab-content" id="register">
+                <input type="text" id="registerName" placeholder="Имя пользователя">
+                <input type="email" id="registerEmail" placeholder="Email">
+                <input type="password" id="registerPassword" placeholder="Пароль">
+                <button class="btn-primary" onclick="register()">Зарегистрироваться</button>
+            </div>
+            
+            <div class="auth-social">
+                <button class="btn-social wallet" onclick="connectWallet()">
+                    👛 Войти через кошелек
+                </button>
+                <button class="btn-social google" onclick="loginWithGoogle()">
+                    📧 Войти через Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания NFT -->
+    <div class="create-modal" id="createModal">
+        <div class="create-content">
+            <span class="close-create" onclick="closeCreateModal()">&times;</span>
+            <h3>✨ Создать новый NFT</h3>
+            
+            <div class="create-form">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">🖼️</div>
+                    <p>Перетащите изображение сюда или нажмите для загрузки</p>
+                    <input type="file" id="nftImage" accept="image/*" hidden>
+                </div>
+                
+                <input type="text" id="nftName" placeholder="Название NFT">
+                <textarea id="nftDescription" placeholder="Описание NFT" rows="3"></textarea>
+                
+                <div class="form-row">
+                    <input type="number" id="nftPrice" placeholder="Цена в ETH" step="0.001">
+                    <select id="nftCategory">
+                        <option value="">Выберите категорию</option>
+                        <option value="art">Искусство</option>
+                        <option value="collectibles">Коллекционные</option>
+                        <option value="photography">Фотография</option>
+                        <option value="virtual-worlds">Виртуальные миры</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <input type="number" id="nftRoyalty" placeholder="Роялти %" min="0" max="50" value="10">
+                    <input type="number" id="nftCopies" placeholder="Количество копий" min="1" value="1">
+                </div>
+                
+                <button class="btn-create-nft" onclick="createNFT()">🚀 Создать NFT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Главный баннер -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">🔥 ГОРЯЧЕЕ</div>
+            <h1>Открой мир цифрового искусства</h1>
+            <p>Коллекционируйте, торгуйте и создавайте уникальные NFT на ведущем маркетплейсе</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">125K+</span>
+                    <span class="stat-label">NFT продано</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">35K+</span>
+                    <span class="stat-label">Коллекционеров</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">$89M</span>
+                    <span class="stat-label">Объем торгов</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <button class="btn-primary btn-glow" onclick="exploreNFTs()">🔍 Исследовать</button>
+                <button class="btn-secondary" onclick="openCreateModal()">🎨 Создать NFT</button>
+            </div>
+        </div>
+        <div class="hero-nft">
+            <div class="nft-preview">
+                <div class="nft-card featured">
+                    <div class="nft-image art-gradient">
+                        <div class="nft-emoji">🎨</div>
+                        <div class="nft-badge">НОВИНКА</div>
+                    </div>
+                    <div class="nft-info">
+                        <h4>Digital Dreams</h4>
+                        <p>2.5 ETH</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Трендовые коллекции -->
+    <section class="collections-section" id="collections">
+        <div class="section-header">
+            <h2>📈 Трендовые коллекции</h2>
+            <p>Самые популярные NFT коллекции этой недели</p>
+        </div>
+        <div class="collections-grid">
+            <div class="collection-card">
+                <div class="collection-header crypto-gradient">
+                    <div class="collection-emoji">🐸</div>
+                </div>
+                <div class="collection-info">
+                    <h3>CryptoPunks</h3>
+                    <p>10,000 уникальных коллекционных персонажей</p>
+                    <div class="collection-stats">
+                        <div class="stat">
+                            <span class="value">+45%</span>
+                            <span class="label">7 дней</span>
+                        </div>
+                        <div class="stat">
+                            <span class="value">2.4K</span>
+                            <span class="label">Владельцы</span>
+                        </div>
+                    </div>
+                    <button class="btn-view">👀 Смотреть</button>
+                </div>
+            </div>
+
+            <div class="collection-card">
+                <div class="collection-header art-gradient">
+                    <div class="collection-emoji">🎭</div>
+                </div>
+                <div class="collection-info">
+                    <h3>Bored Ape</h3>
+                    <p>10,000 уникальных обезьян в клубе</p>
+                    <div class="collection-stats">
+                        <div class="stat">
+                            <span class="value">+32%</span>
+                            <span class="label">7 дней</span>
+                        </div>
+                        <div class="stat">
+                            <span class="value">6.3K</span>
+                            <span class="label">Владельцы</span>
+                        </div>
+                    </div>
+                    <button class="btn-view">👀 Смотреть</button>
+                </div>
+            </div>
+
+            <div class="collection-card">
+                <div class="collection-header photo-gradient">
+                    <div class="collection-emoji">🌌</div>
+                </div>
+                <div class="collection-info">
+                    <h3>Art Blocks</h3>
+                    <p>Генеративное искусство на блокчейне</p>
+                    <div class="collection-stats">
+                        <div class="stat">
+                            <span class="value">+68%</span>
+                            <span class="label">7 дней</span>
+                        </div>
+                        <div class="stat">
+                            <span class="value">8.1K</span>
+                            <span class="label">Владельцы</span>
+                        </div>
+                    </div>
+                    <button class="btn-view">👀 Смотреть</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Популярные NFT -->
+    <section class="nft-section" id="featured">
+        <div class="section-header">
+            <h2>🔥 Популярные NFT</h2>
+            <p>Самые востребованные NFT на рынке</p>
+        </div>
+        <div class="nft-filters">
+            <button class="filter-btn active">Все</button>
+            <button class="filter-btn">Искусство</button>
+            <button class="filter-btn">Коллекционные</button>
+            <button class="filter-btn">Фотография</button>
+            <button class="filter-btn">Виртуальные</button>
+        </div>
+        <div class="nft-grid">
+            <!-- NFT 1 -->
+            <div class="nft-card">
+                <div class="nft-image art-gradient">
+                    <div class="nft-emoji">🎨</div>
+                    <div class="nft-badge">НОВИНКА</div>
+                </div>
+                <div class="nft-info">
+                    <div class="nft-header">
+                        <h3>Digital Revolution</h3>
+                        <div class="nft-likes">❤️ 142</div>
+                    </div>
+                    <p>Эксклюзивное цифровое искусство</p>
+                    <div class="nft-meta">
+                        <div class="nft-rarity legendary">LEGENDARY</div>
+                        <div class="nft-copy">1 из 1</div>
+                    </div>
+                    <div class="nft-price">
+                        <span class="price-eth">3.5 ETH</span>
+                        <span class="price-usd">≈ $12,250</span>
+                    </div>
+                    <div class="nft-owner">
+                        <div class="owner-avatar">👤</div>
+                        <span class="owner-name">CryptoArtist</span>
+                    </div>
+                    <button class="btn-buy" data-nft="digital-art">🛒 Купить сейчас</button>
+                </div>
+            </div>
+
+            <!-- NFT 2 -->
+            <div class="nft-card">
+                <div class="nft-image crypto-gradient">
+                    <div class="nft-emoji">🐸</div>
+                    <div class="nft-badge">ПОПУЛЯРНО</div>
+                </div>
+                <div class="nft-info">
+                    <div class="nft-header">
+                        <h3>Pepe #7294</h3>
+                        <div class="nft-likes">❤️ 89</div>
+                    </div>
+                    <p>Редкий Pepe из коллекции</p>
+                    <div class="nft-meta">
+                        <div class="nft-rarity epic">EPIC</div>
+                        <div class="nft-copy">1 из 100</div>
+                    </div>
+                    <div class="nft-price">
+                        <span class="price-eth">1.2 ETH</span>
+                        <span class="price-usd">≈ $4,200</span>
+                    </div>
+                    <div class="nft-owner">
+                        <div class="owner-avatar">👤</div>
+                        <span class="owner-name">NFTCollector</span>
+                    </div>
+                    <button class="btn-buy" data-nft="pepe">🛒 Купить сейчас</button>
+                </div>
+            </div>
+
+            <!-- NFT 3 -->
+            <div class="nft-card">
+                <div class="nft-image photo-gradient">
+                    <div class="nft-emoji">🌌</div>
+                </div>
+                <div class="nft-info">
+                    <div class="nft-header">
+                        <h3>Cosmic Journey</h3>
+                        <div class="nft-likes">❤️ 67</div>
+                    </div>
+                    <p>Космическая фотография</p>
+                    <div class="nft-meta">
+                        <div class="nft-rarity rare">RARE</div>
+                        <div class="nft-copy">1 из 50</div>
+                    </div>
+                    <div class="nft-price">
+                        <span class="price-eth">0.8 ETH</span>
+                        <span class="price-usd">≈ $2,800</span>
+                    </div>
+                    <div class="nft-owner">
+                        <div class="owner-avatar">👤</div>
+                        <span class="owner-name">SpacePhotographer</span>
+                    </div>
+                    <button class="btn-buy" data-nft="cosmic">🛒 Купить сейчас</button>
+                </div>
+            </div>
+
+            <!-- NFT 4 -->
+            <div class="nft-card">
+                <div class="nft-image virtual-gradient">
+                    <div class="nft-emoji">🏰</div>
+                </div>
+                <div class="nft-info">
+                    <div class="nft-header">
+                        <h3>Virtual Castle</h3>
+                        <div class="nft-likes">❤️ 54</div>
+                    </div>
+                    <p>Замок в метавселенной</p>
+                    <div class="nft-meta">
+                        <div class="nft-rarity uncommon">UNCOMMON</div>
+                        <div class="nft-copy">1 из 500</div>
+                    </div>
+                    <div class="nft-price">
+                        <span class="price-eth">0.45 ETH</span>
+                        <span class="price-usd">≈ $1,575</span>
+                    </div>
+                    <div class="nft-owner">
+                        <div class="owner-avatar">👤</div>
+                        <span class="owner-name">MetaBuilder</span>
+                    </div>
+                    <button class="btn-buy" data-nft="castle">🛒 Купить сейчас</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Статистика -->
+    <section class="stats-section" id="stats">
+        <div class="section-header">
+            <h2>📊 Статистика рынка</h2>
+            <p>Актуальные данные по NFT рынку</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <h3>$89M</h3>
+                    <p>Объем торгов за 30 дней</p>
+                    <span class="stat-change positive">+24%</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <h3>35,842</h3>
+                    <p>Активных трейдеров</p>
+                    <span class="stat-change positive">+15%</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🖼️</div>
+                <div class="stat-content">
+                    <h3>125,647</h3>
+                    <p>NFT продано</p>
+                    <span class="stat-change positive">+32%</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-content">
+                    <h3>2,451 ETH</h3>
+                    <p>Самая дорогая продажа</p>
+                    <span class="stat-change positive">+18%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>🖼️ NFT Market</h3>
+                <p>Ведущая платформа для торговли NFT. Создавайте, коллекционируйте и торгуйте уникальными цифровыми активами.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">💬</a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">👾</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Маркетплейс</h4>
+                <a href="#">Все NFT</a>
+                <a href="#">Коллекции</a>
+                <a href="#">Создатели</a>
+                <a href="#">Статистика</a>
+            </div>
+            <div class="footer-section">
+                <h4>Мой аккаунт</h4>
+                <a href="#">Мой профиль</a>
+                <a href="#">Мои NFT</a>
+                <a href="#">Избранное</a>
+                <a href="#">История торгов</a>
+            </div>
+            <div class="footer-section">
+                <h4>Ресурсы</h4>
+                <a href="#">Помощь</a>
+                <a href="#">Блог</a>
+                <a href="#">Документация</a>
+                <a href="#">Поддержка</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 NFT Market. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
